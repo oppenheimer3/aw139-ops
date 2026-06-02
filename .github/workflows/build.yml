@@ -38,8 +38,14 @@ jobs:
       - name: Generate app icons from logo
         run: node scripts/generate-icons.mjs
 
+      - name: Check Tauri CLI version
+        run: npx @tauri-apps/cli --version
+
+      - name: Build Tauri frontend
+        run: npm run build
+
       - name: Build Tauri app (MSI)
-        run: npx tauri build --bundles msi
+        run: npx @tauri-apps/cli build --bundles msi --ci
         env:
           TAURI_SIGNING_PRIVATE_KEY: ""
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ""
