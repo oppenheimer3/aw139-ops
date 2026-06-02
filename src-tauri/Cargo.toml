@@ -1,0 +1,20 @@
+[package]
+name = "aw139-ops"
+version = "0.1.0"
+description = "AW139 Fleet Management & Performance Calculator"
+authors = ["you"]
+edition = "2021"
+
+[lib]
+name = "aw139_ops_lib"
+crate-type = ["lib", "cdylib", "staticlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-shell = "2"
+tauri-plugin-sql = { version = "2", features = ["sqlite"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
