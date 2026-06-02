@@ -10,7 +10,6 @@
     "beforeBuildCommand": "npm run build"
   },
   "app": {
-    "title": "AW139 Ops",
     "windows": [
       {
         "title": "AW139 Ops",
