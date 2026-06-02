@@ -25,6 +25,9 @@ jobs:
       - name: Install frontend dependencies
         run: npm ci
 
+      - name: Build frontend
+        run: npm run build
+
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
         with:
@@ -35,29 +38,27 @@ jobs:
         with:
           workspaces: src-tauri
 
-      - name: Generate app icons from logo
+      - name: Generate app icons
         run: node scripts/generate-icons.mjs
 
-      - name: Check Tauri CLI version
-        run: npx @tauri-apps/cli --version
+      - name: Install Tauri CLI
+        run: cargo install tauri-cli --version "^2"
 
-      - name: Build Tauri frontend
-        run: npm run build
-
-      - name: Build Tauri app (MSI)
-        run: npx @tauri-apps/cli build --bundles msi --ci
+      - name: Bundle desktop app
+        run: cargo tauri build --bundles msi
+        working-directory: .
         env:
           TAURI_SIGNING_PRIVATE_KEY: ""
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ""
 
-      - name: Upload installer artifact
+      - name: Upload MSI installer
         uses: actions/upload-artifact@v4
         with:
           name: aw139-ops-installer
           path: src-tauri/target/release/bundle/msi/*.msi
           if-no-files-found: warn
 
-      - name: Upload portable (NSIS) if exists
+      - name: Upload NSIS portable
         uses: actions/upload-artifact@v4
         with:
           name: aw139-ops-portable
