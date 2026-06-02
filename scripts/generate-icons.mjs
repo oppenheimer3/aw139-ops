@@ -8,7 +8,7 @@ const logoPath = join(__dirname, '..', 'public', 'GAPC.png');
 
 const ICONS = [
   '32x32.png', '128x128.png', '128x128@2x.png',
-  'icon.ico', 'icon.png',
+  'icon.png',
   'Square30x30Logo.png', 'Square44x44Logo.png',
   'Square71x71Logo.png', 'Square89x89Logo.png',
   'Square107x107Logo.png', 'Square142x142Logo.png',
