@@ -97,6 +97,19 @@ export default function MaintenanceConfig({ registration }) {
     setLoaded(true);
   }, [registration]);
 
+  function getLatestEmptyWeight() {
+    const records = loadRecords(registration);
+    if (records && records.length > 0) {
+      const last = records[records.length - 1];
+      return {
+        weight_kg: last.totalWeight_kg,
+        longMoment_kgmm: last.totalLongMoment_kgmm,
+        latMoment_kgmm: last.totalLatMoment_kgmm || 0,
+      };
+    }
+    return { ...BASE_EMPTY };
+  }
+
   const toggleSeat = useCallback((seat) => {
     if (autoRemoved.has(seat)) return;
     setInstalledSeats((prev) => {
@@ -136,9 +149,10 @@ export default function MaintenanceConfig({ registration }) {
   }, []);
 
   const totals = useMemo(() => {
-    let w = BASE_EMPTY.weight_kg;
-    let lm = BASE_EMPTY.longMoment_kgmm;
-    let la = BASE_EMPTY.latMoment_kgmm;
+    const base = getLatestEmptyWeight();
+    let w = base.weight_kg;
+    let lm = base.longMoment_kgmm;
+    let la = base.latMoment_kgmm;
 
     SEAT_ROWS.flat().forEach((seat) => {
       const d = getSeatData(seat);
@@ -167,7 +181,7 @@ export default function MaintenanceConfig({ registration }) {
       blCg_mm: w > 0 ? Math.round((la / w) * 100) / 100 : 0,
       latMoment_kgmm: Math.round(la * 100) / 100,
     };
-  }, [installedSeats, installedEquip]);
+  }, [installedSeats, installedEquip, registration]);
 
   const handleSave = () => {
     const prevCfg = loadConfig(registration);
@@ -178,27 +192,10 @@ export default function MaintenanceConfig({ registration }) {
     const username = session.username;
     const newRecords = [];
 
-    let runningW = BASE_EMPTY.weight_kg;
-    let runningLM = BASE_EMPTY.longMoment_kgmm;
-    let runningLA = BASE_EMPTY.latMoment_kgmm;
-
-    const allSeats = SEAT_ROWS.flat();
-    allSeats.forEach((seat) => {
-      const d = getSeatData(seat);
-      if (d && !prevSeats.has(seat)) {
-        runningW -= d.weight_kg;
-        runningLM -= d.weight_kg * d.sta_arm_mm;
-        runningLA -= d.weight_kg * d.bl_arm_mm;
-      }
-    });
-    CONFIG_OPTIONS.forEach((opt) => {
-      if (prevEquip.has(opt)) {
-        const d = EQUIP_DATA[opt];
-        runningW += d.weight_kg;
-        runningLM += d.weight_kg * d.sta_arm_mm;
-        runningLA += d.weight_kg * d.bl_arm_mm;
-      }
-    });
+    const base = getLatestEmptyWeight();
+    let runningW = base.weight_kg;
+    let runningLM = base.longMoment_kgmm;
+    let runningLA = base.latMoment_kgmm;
 
     const deltas = [];
 
